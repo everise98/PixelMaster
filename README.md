@@ -6,8 +6,8 @@
 
 **AI-powered image upscaler & mosaic tool — one-click Windows app, no install required.**
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=flat-square&logo=windows)](https://github.com/YOUR_USERNAME/PixelMaster/releases)
-[![Version](https://img.shields.io/badge/Version-1.0.0-7c3aed?style=flat-square)](https://github.com/YOUR_USERNAME/PixelMaster/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=flat-square&logo=windows)](https://github.com/everise98/PixelMaster/releases)
+[![Version](https://img.shields.io/badge/Version-1.0.0-7c3aed?style=flat-square)](https://github.com/everise98/PixelMaster/releases)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![PyQt6](https://img.shields.io/badge/PyQt6-6.6+-41cd52?style=flat-square)](https://pypi.org/project/PyQt6/)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
@@ -38,7 +38,7 @@
 
 > **No installation required.** Just download and double-click.
 
-1. Go to the [**Releases**](https://github.com/YOUR_USERNAME/PixelMaster/releases) page
+1. Go to the [**Releases**](https://github.com/everise98/PixelMaster/releases) page
 2. Download `PixelMaster.exe` from the latest release
 3. Double-click to run — Windows may show a SmartScreen warning, click **More info → Run anyway**
 
@@ -135,7 +135,7 @@ Click **Save As New File** — saved as `original_mosaic.png` (new file, origina
 ## 🛠 Build from Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/PixelMaster.git
+git clone https://github.com/everise98/PixelMaster.git
 cd PixelMaster
 
 python -m venv venv
@@ -151,7 +151,7 @@ pyinstaller pixelrevive.spec --noconfirm
 ```
 
 > ONNX model files (`assets/models/*.onnx`) are required.
-> Download from [Releases](https://github.com/YOUR_USERNAME/PixelMaster/releases) or convert from original `.pth` weights using `convert_models.py`.
+> Download from [Releases](https://github.com/everise98/PixelMaster/releases) or convert from original `.pth` weights using `convert_models.py`.
 
 ---
 
@@ -189,6 +189,6 @@ MIT License — free to use, modify, and distribute.
 
 <div align="center">
 
-Made with ♥ by **Youngkee Kim** · [GIST-AWEAR LAB](https://github.com/YOUR_USERNAME)
+Made with ♥ by **Youngkee Kim** · [GIST-AWEAR LAB](https://github.com/everise98)
 
 </div>
