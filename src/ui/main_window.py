@@ -16,7 +16,7 @@ from src.core.worker import UpscaleWorker
 
 APP_NAME    = "Pixel Master"
 APP_VERSION = "1.0.0"
-AUTHOR      = "Youngkee Kim  ·  GIST-AWEAR LAB"
+AUTHOR      = "Youngkee Kim"
 
 
 class MainWindow(QMainWindow):
@@ -108,11 +108,11 @@ class MainWindow(QMainWindow):
         self._method_combo = QComboBox()
         for key, label in METHODS.items():
             self._method_combo.addItem(label, key)
-        self._method_combo.setCurrentIndex(4)   # default: Real-ESRGAN Plus
+        self._method_combo.setCurrentIndex(5)   # default: Real-ESRGAN General
         layout.addWidget(self._method_combo)
         layout.addSpacing(4)
 
-        method_hint = QLabel("Real-ESRGAN Plus: best quality · slower\nReal-ESRGAN General: fast AI · lighter\nMulti-scale: no AI · fastest")
+        method_hint = QLabel("Real-ESRGAN General: recommended · fast AI\nReal-ESRGAN Plus: best quality · slower\nMulti-scale: no AI · fastest")
         method_hint.setStyleSheet(
             "font-size: 10px; color: #334155; background: transparent; line-height: 1.4;"
         )

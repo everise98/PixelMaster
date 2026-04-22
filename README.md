@@ -120,8 +120,8 @@ Click **Save As New File** — saved as `original_mosaic.png` (new file, origina
 
 | Method | Speed | Quality | Best For |
 |---|---|---|---|
-| **Real-ESRGAN Plus** ⭐ | Slow | ★★★★★ | Photos, faces, fine detail |
-| **Real-ESRGAN General** | Medium | ★★★★☆ | General images, fast AI |
+| **Real-ESRGAN General** ⭐ | Medium | ★★★★☆ | General images, best speed/quality balance |
+| **Real-ESRGAN Plus** | Slow | ★★★★★ | Photos, faces, maximum detail |
 | **Multi-scale** | Fast | ★★★☆☆ | Balanced, no AI |
 | **HD Enhance** | Fast | ★★★☆☆ | Slightly noisy photos |
 | **Lanczos** | Fast | ★★★☆☆ | Clean edges |
@@ -189,6 +189,6 @@ MIT License — free to use, modify, and distribute.
 
 <div align="center">
 
-Made with ♥ by **Youngkee Kim** · [GIST-AWEAR LAB](https://github.com/everise98)
+Made by **Youngkee Kim**
 
 </div>
