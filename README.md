@@ -34,17 +34,57 @@
 
 ---
 
-## ⬇ Download
+## ⬇ Download & Installation
 
-> **No installation required.** Just download and double-click.
+> **No installation required** — Python, GPU, or any setup is not needed.
+> Just download the `.exe` and run it directly.
 
-1. Go to the [**Releases**](https://github.com/everise98/PixelMaster/releases) page
-2. Download `PixelMaster.exe` from the latest release
-3. Double-click to run — Windows may show a SmartScreen warning, click **More info → Run anyway**
+### Step 1 — Download
+
+Go to the **[Releases](https://github.com/everise98/PixelMaster/releases)** page and click `PixelMaster.exe` under **Assets**.
 
 ```
-PixelMaster.exe   (~165 MB, includes AI models)
+PixelMaster.exe   (~165 MB)
+AI models are bundled inside — no separate download needed.
 ```
+
+<details>
+<summary>Can't find the download button? Click here</summary>
+
+1. Open https://github.com/everise98/PixelMaster/releases
+2. Click the latest release (e.g. **PixelMaster v1.0.1**)
+3. Scroll down to the **Assets** section
+4. Click **`PixelMaster.exe`** to start downloading
+
+</details>
+
+---
+
+### Step 2 — Run
+
+Double-click `PixelMaster.exe` to launch the app.
+
+**Windows SmartScreen warning may appear** (because the exe is not code-signed):
+
+> *"Windows protected your PC"*
+
+To proceed:
+1. Click **"More info"**
+2. Click **"Run anyway"**
+
+This is safe — the app runs entirely on your local machine with no network access.
+
+---
+
+### Step 3 — First Launch
+
+The app may take **5–10 seconds** to start on first run (AI models are loading).
+Once open, you're ready to go — no further setup needed.
+
+> **System Requirements**
+> - Windows 10 or 11 (64-bit)
+> - ~300 MB free disk space
+> - No GPU required (runs on CPU)
 
 ---
 
