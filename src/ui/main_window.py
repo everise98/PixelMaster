@@ -15,7 +15,7 @@ from src.core.upscaler import get_image_info, METHODS
 from src.core.worker import UpscaleWorker
 
 APP_NAME    = "Pixel Master"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.1"
 AUTHOR      = "Youngkee Kim"
 
 

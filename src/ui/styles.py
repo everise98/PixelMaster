@@ -74,9 +74,9 @@ QPushButton#scaleBtn:hover {
     border-color: #93F1A5;
 }
 QPushButton#scaleBtn[active="true"] {
-    background-color: #1a2e1f;
+    background-color: #2db558;
     color: #ffffff;
-    border-color: #1a2e1f;
+    border-color: #2db558;
 }
 
 /* ── Method Combo ── */
@@ -137,7 +137,7 @@ QPushButton#browseBtn:hover {
 
 /* ── Primary Action Button ── */
 QPushButton#primaryBtn {
-    background-color: #1a2e1f;
+    background-color: #2db558;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -147,10 +147,10 @@ QPushButton#primaryBtn {
     letter-spacing: 0.2px;
 }
 QPushButton#primaryBtn:hover {
-    background-color: #2d4a32;
+    background-color: #3acc6a;
 }
 QPushButton#primaryBtn:pressed {
-    background-color: #0d1f10;
+    background-color: #219e48;
 }
 QPushButton#primaryBtn:disabled {
     background-color: #e2e8e4;
@@ -163,7 +163,7 @@ QPushButton#secondaryBtn {
     color: #4a5e50;
     border: 1px solid #d4e0d8;
     border-radius: 8px;
-    padding: 11px 20px;
+    padding: 5px 16px;
     font-size: 13px;
     font-weight: 600;
 }

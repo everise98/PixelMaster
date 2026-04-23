@@ -221,11 +221,11 @@ class PreviewDialog(QDialog):
                 background-color:#f4fdf6; color:#1a2e1f; border-color:#93F1A5;
             }"""
         return """QPushButton {
-            background-color:#1a2e1f;
+            background-color:#2db558;
             color:#ffffff; border:none; border-radius:8px;
             padding:8px 22px; font-size:12px; font-weight:600;
         } QPushButton:hover {
-            background-color:#2d4a32;
+            background-color:#3acc6a;
         }"""
 
     def _open_file(self):
