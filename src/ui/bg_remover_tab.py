@@ -1,19 +1,117 @@
 import os
+import math
+import urllib.request
 import numpy as np
 from PIL import Image as PilImage
 
 from PyQt6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QFrame, QLabel,
-    QPushButton, QFileDialog, QSizePolicy, QScrollArea,
+    QPushButton, QFileDialog, QSizePolicy, QDialog,
+    QProgressBar, QVBoxLayout as QVBox,
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSize
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QPainter, QColor, QImage, QPixmap
 
 
-# ── Worker ────────────────────────────────────────────────────────────────────
+MODEL_URL  = "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx"
+MODEL_PATH = os.path.join(os.path.expanduser("~"), ".u2net", "u2net.onnx")
+MODEL_SIZE = 176_000_000   # ~176 MB
+
+
+# ── Download worker ───────────────────────────────────────────────────────────
+
+class DownloadWorker(QThread):
+    progress = pyqtSignal(int)    # 0-100
+    done     = pyqtSignal()
+    error    = pyqtSignal(str)
+
+    def run(self):
+        try:
+            os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+            downloaded = [0]
+
+            def hook(count, block, total):
+                downloaded[0] = min(count * block, MODEL_SIZE)
+                pct = min(100, int(downloaded[0] / MODEL_SIZE * 100))
+                self.progress.emit(pct)
+
+            urllib.request.urlretrieve(MODEL_URL, MODEL_PATH, hook)
+            self.progress.emit(100)
+            self.done.emit()
+        except Exception as e:
+            self.error.emit(str(e))
+
+
+# ── Download dialog ───────────────────────────────────────────────────────────
+
+class DownloadDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Downloading AI Model")
+        self.setFixedSize(400, 160)
+        self.setWindowFlags(
+            Qt.WindowType.Dialog |
+            Qt.WindowType.WindowTitleHint |
+            Qt.WindowType.CustomizeWindowHint
+        )
+        self.setStyleSheet("""
+            QDialog { background: #ffffff; }
+            QLabel  { color: #0f172a; background: transparent; }
+        """)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(28, 24, 28, 24)
+        layout.setSpacing(12)
+
+        title = QLabel("Downloading u2net model")
+        title.setStyleSheet("font-size: 15px; font-weight: 700; color: #0f172a;")
+        layout.addWidget(title)
+
+        self._sub = QLabel("First-time setup — ~176 MB, downloaded once")
+        self._sub.setStyleSheet("font-size: 11px; color: #64748b;")
+        layout.addWidget(self._sub)
+
+        self._bar = QProgressBar()
+        self._bar.setRange(0, 100)
+        self._bar.setValue(0)
+        self._bar.setFixedHeight(8)
+        self._bar.setTextVisible(False)
+        self._bar.setStyleSheet("""
+            QProgressBar {
+                background: #e2e8f0; border: none; border-radius: 4px;
+            }
+            QProgressBar::chunk {
+                background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
+                    stop:0 #16a34a, stop:1 #22c55e);
+                border-radius: 4px;
+            }
+        """)
+        layout.addWidget(self._bar)
+
+        self._pct_lbl = QLabel("0%")
+        self._pct_lbl.setStyleSheet("font-size: 11px; color: #16a34a; font-weight: 600;")
+        layout.addWidget(self._pct_lbl)
+
+        self._worker = DownloadWorker()
+        self._worker.progress.connect(self._on_progress)
+        self._worker.done.connect(self.accept)
+        self._worker.error.connect(self._on_error)
+        self._worker.start()
+
+    def _on_progress(self, pct: int):
+        self._bar.setValue(pct)
+        mb = pct * 176 // 100
+        self._pct_lbl.setText(f"{pct}%  ·  {mb} / 176 MB")
+
+    def _on_error(self, msg: str):
+        self._sub.setText(f"Error: {msg}")
+        self.reject()
+
+
+# ── BG Remove worker ──────────────────────────────────────────────────────────
 
 class BgRemoveWorker(QThread):
-    done  = pyqtSignal(object)   # PIL RGBA Image
+    done  = pyqtSignal(object)
     error = pyqtSignal(str)
 
     def __init__(self, path: str):
@@ -30,16 +128,14 @@ class BgRemoveWorker(QThread):
             self.error.emit(str(e))
 
 
-# ── Preview widget with checkerboard ─────────────────────────────────────────
+# ── Preview widget ────────────────────────────────────────────────────────────
 
 class ImagePreview(QWidget):
-    """Displays a PIL image; RGBA images shown over a checkerboard."""
-
-    def __init__(self, label: str, parent=None):
+    def __init__(self, placeholder: str, parent=None):
         super().__init__(parent)
-        self._pil:   PilImage.Image | None = None
-        self._label  = label
-        self._pixmap: QPixmap | None = None
+        self._pil:        PilImage.Image | None = None
+        self._pixmap:     QPixmap | None        = None
+        self._placeholder = placeholder
         self.setMinimumSize(200, 200)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
@@ -48,63 +144,54 @@ class ImagePreview(QWidget):
         if img is None:
             self._pixmap = None
         else:
-            self._pixmap = self._to_pixmap(img)
+            if img.mode == "RGBA":
+                arr  = np.array(img)
+                qimg = QImage(arr.tobytes(), arr.shape[1], arr.shape[0],
+                              arr.shape[1] * 4, QImage.Format.Format_RGBA8888)
+            else:
+                arr  = np.array(img.convert("RGB"))
+                qimg = QImage(arr.tobytes(), arr.shape[1], arr.shape[0],
+                              arr.shape[1] * 3, QImage.Format.Format_RGB888)
+            self._pixmap = QPixmap.fromImage(qimg)
         self.update()
-
-    @staticmethod
-    def _to_pixmap(img: PilImage.Image) -> QPixmap:
-        if img.mode == "RGBA":
-            arr  = np.array(img)
-            qimg = QImage(arr.tobytes(), arr.shape[1], arr.shape[0],
-                          arr.shape[1] * 4, QImage.Format.Format_RGBA8888)
-        else:
-            rgb  = img.convert("RGB")
-            arr  = np.array(rgb)
-            qimg = QImage(arr.tobytes(), arr.shape[1], arr.shape[0],
-                          arr.shape[1] * 3, QImage.Format.Format_RGB888)
-        return QPixmap.fromImage(qimg)
 
     def paintEvent(self, _event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-
-        # background
-        painter.fillRect(self.rect(), QColor(18, 18, 30))
+        painter.fillRect(self.rect(), QColor(248, 250, 252))  # #f8fafc
 
         if self._pixmap is None:
-            painter.setPen(QColor(60, 55, 100))
-            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, self._label)
+            painter.setPen(QColor(148, 163, 184))  # #94a3b8
+            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter,
+                             self._placeholder)
             painter.end()
             return
 
-        # fit image
         pw, ph = self._pixmap.width(), self._pixmap.height()
-        ww, wh = self.width(), self.height() - 24   # reserve space for label
+        ww, wh = self.width(), self.height() - 26
         scale  = min(ww / pw, wh / ph, 1.0)
         dw, dh = int(pw * scale), int(ph * scale)
-        ox     = (ww - dw) // 2
-        oy     = (wh - dh) // 2
+        ox, oy = (ww - dw) // 2, (wh - dh) // 2
 
-        # checkerboard for RGBA images
+        # checkerboard for transparent RGBA
         if self._pil and self._pil.mode == "RGBA":
-            cell = max(6, dw // 30)
-            for row in range(0, dh, cell):
-                for col in range(0, dw, cell):
-                    if (row // cell + col // cell) % 2 == 0:
-                        painter.fillRect(ox + col, oy + row, cell, cell, QColor(200, 200, 200))
-                    else:
-                        painter.fillRect(ox + col, oy + row, cell, cell, QColor(155, 155, 155))
+            cell = max(6, dw // 32)
+            for r in range(0, dh, cell):
+                for c in range(0, dw, cell):
+                    col = QColor(210, 210, 210) if (r // cell + c // cell) % 2 == 0 \
+                          else QColor(240, 240, 240)
+                    painter.fillRect(ox + c, oy + r, cell, cell, col)
 
         painter.drawPixmap(ox, oy,
             self._pixmap.scaled(dw, dh,
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation))
 
-        # label below
-        painter.setPen(QColor(100, 90, 140))
-        lbl_rect = self.rect().adjusted(0, self.height() - 24, 0, 0)
-        painter.drawText(lbl_rect, Qt.AlignmentFlag.AlignCenter, self._label)
-
+        # bottom caption
+        painter.setPen(QColor(100, 116, 139))
+        cap_rect = self.rect().adjusted(0, self.height() - 22, 0, 0)
+        painter.drawText(cap_rect, Qt.AlignmentFlag.AlignCenter,
+                         "Original" if "Original" in self._placeholder else "Result")
         painter.end()
 
 
@@ -114,12 +201,9 @@ class BgRemoverTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._source_path = ""
-        self._orig_pil:   PilImage.Image | None = None
         self._result_pil: PilImage.Image | None = None
         self._worker: BgRemoveWorker | None = None
         self._setup_ui()
-
-    # ── UI ────────────────────────────────────────────────────────────────────
 
     def _setup_ui(self):
         layout = QHBoxLayout(self)
@@ -151,7 +235,7 @@ class BgRemoverTab(QWidget):
         open_btn.setFixedHeight(38)
         open_btn.clicked.connect(self._open_image)
         layout.addWidget(open_btn)
-        layout.addSpacing(16)
+        layout.addSpacing(14)
 
         self._remove_btn = QPushButton("✂  Remove Background")
         self._remove_btn.setObjectName("primaryBtn")
@@ -162,17 +246,16 @@ class BgRemoverTab(QWidget):
         layout.addWidget(self._remove_btn)
         layout.addSpacing(20)
 
-        # Info box
         info = QLabel(
             "Output: transparent PNG\n\n"
             "Model: u2net (~176 MB)\n"
-            "Downloaded once to:\n~/.u2net/\n\n"
+            "Downloaded once on first use\n\n"
             "Processing time:\n~3–10 sec (CPU)"
         )
         info.setStyleSheet(
-            "font-size: 10px; color: #334155; background: #12121f;"
-            "border: 1px solid #1e1e38; border-radius: 8px;"
-            "padding: 10px; line-height: 1.6;"
+            "font-size: 10px; color: #64748b; background: #f0fdf4;"
+            "border: 1px solid #bbf7d0; border-radius: 8px;"
+            "padding: 10px;"
         )
         info.setWordWrap(True)
         layout.addWidget(info)
@@ -195,11 +278,10 @@ class BgRemoverTab(QWidget):
         layout.setContentsMargins(16, 16, 16, 0)
         layout.setSpacing(12)
 
-        # Before / After side by side
         previews = QHBoxLayout()
         previews.setSpacing(12)
 
-        self._before = ImagePreview("Original\n\nOpen an image to get started")
+        self._before = ImagePreview("Original\n\nOpen or drag an image")
         self._after  = ImagePreview("Result\n\nClick  ✂ Remove Background")
         self._before.setAcceptDrops(True)
         self._before.dragEnterEvent = self._drag_enter
@@ -207,10 +289,9 @@ class BgRemoverTab(QWidget):
 
         previews.addWidget(self._before, stretch=1)
 
-        # divider
         div = QFrame()
         div.setFixedWidth(1)
-        div.setStyleSheet("background: #1e1e38;")
+        div.setStyleSheet("background: #e2e8f0;")
         previews.addWidget(div)
 
         previews.addWidget(self._after, stretch=1)
@@ -219,8 +300,8 @@ class BgRemoverTab(QWidget):
         self._status_lbl = QLabel("Open or drag an image to get started")
         self._status_lbl.setFixedHeight(30)
         self._status_lbl.setStyleSheet(
-            "font-size: 11px; color: #475569; background: #0a0a14;"
-            "border-top: 1px solid #1e1e38; padding: 0 16px;"
+            "font-size: 11px; color: #64748b; background: #f8fafc;"
+            "border-top: 1px solid #e2e8f0; padding: 0 16px;"
         )
         layout.addWidget(self._status_lbl)
         return container
@@ -242,8 +323,7 @@ class BgRemoverTab(QWidget):
 
     def _open_image(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Open Image", "",
-            "Images (*.jpg *.jpeg *.png)"
+            self, "Open Image", "", "Images (*.jpg *.jpeg *.png)"
         )
         if path:
             self._load(path)
@@ -252,22 +332,29 @@ class BgRemoverTab(QWidget):
         try:
             self._source_path = path
             self._result_pil  = None
-            self._orig_pil    = PilImage.open(path).convert("RGBA")
-            self._before.set_image(self._orig_pil)
+            pil = PilImage.open(path).convert("RGBA")
+            self._before.set_image(pil)
             self._after.set_image(None)
             self._remove_btn.setEnabled(True)
             self._save_btn.setEnabled(False)
-            name = os.path.basename(path)
-            w, h = self._orig_pil.size
+            w, h = pil.size
             self._status_lbl.setText(
-                f"Loaded: {name}  ·  {w}×{h}  ·  Click  ✂ Remove Background"
+                f"Loaded: {os.path.basename(path)}  ·  {w}×{h}  ·  Click  ✂ Remove Background"
             )
         except Exception as e:
-            self._status_lbl.setText(f"Error loading image: {e}")
+            self._status_lbl.setText(f"Error loading: {e}")
 
     def _run(self):
         if not self._source_path or self._worker is not None:
             return
+
+        # Show download dialog if model not present
+        if not os.path.exists(MODEL_PATH):
+            dlg = DownloadDialog(self)
+            if dlg.exec() != QDialog.DialogCode.Accepted:
+                self._status_lbl.setText("Model download failed or cancelled.")
+                return
+
         self._remove_btn.setEnabled(False)
         self._remove_btn.setText("Processing…")
         self._status_lbl.setText("Removing background — this may take a few seconds…")
@@ -280,15 +367,13 @@ class BgRemoverTab(QWidget):
         self._worker.start()
 
     def _on_done(self, result: PilImage.Image):
-        self._worker      = None
-        self._result_pil  = result
+        self._worker     = None
+        self._result_pil = result
         self._after.set_image(result)
         self._remove_btn.setEnabled(True)
         self._remove_btn.setText("✂  Remove Background")
         self._save_btn.setEnabled(True)
-        self._status_lbl.setText(
-            "Background removed  ·  Click  Save as PNG  to export"
-        )
+        self._status_lbl.setText("Done  ·  Click  Save as PNG  to export")
 
     def _on_error(self, msg: str):
         self._worker = None
@@ -300,9 +385,8 @@ class BgRemoverTab(QWidget):
         if self._result_pil is None:
             return
         base, _ = os.path.splitext(self._source_path) if self._source_path else ("output", "")
-        default = base + "_nobg.png"
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save as PNG", default, "PNG (*.png)"
+            self, "Save as PNG", base + "_nobg.png", "PNG (*.png)"
         )
         if path:
             try:

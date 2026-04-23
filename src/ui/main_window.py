@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
 
         method_hint = QLabel("Real-ESRGAN General: recommended · fast AI\nReal-ESRGAN Plus: best quality · slower\nMulti-scale: no AI · fastest")
         method_hint.setStyleSheet(
-            "font-size: 10px; color: #334155; background: transparent; line-height: 1.4;"
+            "font-size: 10px; color: #64748b; background: transparent; line-height: 1.4;"
         )
         layout.addWidget(method_hint)
         layout.addSpacing(22)
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
 
         self._folder_label = QLabel("Same as source file")
         self._folder_label.setStyleSheet(
-            "font-size: 10px; color: #475569; background: transparent;"
+            "font-size: 10px; color: #64748b; background: transparent;"
         )
         self._folder_label.setWordWrap(True)
         layout.addSpacing(4)
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self._empty_label = QLabel("Add images above to get started")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._empty_label.setStyleSheet(
-            "font-size: 12px; color: #334155; background: transparent; padding: 20px;"
+            "font-size: 12px; color: #64748b; background: transparent; padding: 20px;"
         )
         self._queue_layout.addWidget(self._empty_label)
         self._queue_layout.addStretch()
@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
 
         self._count_label = QLabel("")
         self._count_label.setStyleSheet(
-            "font-size: 12px; color: #475569; background: transparent;"
+            "font-size: 12px; color: #64748b; background: transparent;"
         )
         action_row.addWidget(self._count_label)
         action_row.addStretch()
@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
     def _build_footer(self) -> QWidget:
         bar = QWidget()
         bar.setFixedHeight(40)
-        bar.setStyleSheet("background-color: #0a0a14; border-top: 1px solid #1e1e38;")
+        bar.setStyleSheet("background-color: #0f172a; border-top: 1px solid #e2e8f0;")
 
         layout = QHBoxLayout(bar)
         layout.setContentsMargins(20, 0, 20, 0)
@@ -336,7 +336,7 @@ class MainWindow(QMainWindow):
 
         if added:
             self._update_queue_ui()
-            self._set_status(f"Added {added} image{'s' if added != 1 else ''}", "#7c3aed")
+            self._set_status(f"Added {added} image{'s' if added != 1 else ''}", "#16a34a")
 
     def _remove_image(self, path: str):
         if path in self._queue:
@@ -365,7 +365,7 @@ class MainWindow(QMainWindow):
             self._folder_label.setText(short)
             self._folder_label.setToolTip(folder)
             self._folder_label.setStyleSheet(
-                "font-size: 10px; color: #7c3aed; background: transparent;"
+                "font-size: 10px; color: #16a34a; background: transparent;"
             )
 
     def _reset_folder(self):
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow):
         self._folder_label.setText("Same as source file")
         self._folder_label.setToolTip("")
         self._folder_label.setStyleSheet(
-            "font-size: 10px; color: #475569; background: transparent;"
+            "font-size: 10px; color: #64748b; background: transparent;"
         )
 
     def _start_processing(self):

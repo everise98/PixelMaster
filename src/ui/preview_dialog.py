@@ -40,7 +40,7 @@ class SplitView(QWidget):
         ox = (W - disp.width()) // 2
         oy = (H - disp.height()) // 2
 
-        p.fillRect(0, 0, W, H, QColor("#0d0d1a"))
+        p.fillRect(0, 0, W, H, QColor("#ffffff"))
 
         # BEFORE — left half
         p.setClipRect(ox, oy, max(0, sx - ox), disp.height())
@@ -59,7 +59,7 @@ class SplitView(QWidget):
 
         # handle
         cy, r = H // 2, 18
-        p.setBrush(QBrush(QColor("#7c3aed")))
+        p.setBrush(QBrush(QColor("#16a34a")))
         p.setPen(QPen(QColor("#ffffff"), 2))
         p.drawEllipse(QPoint(sx, cy), r, r)
         p.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
@@ -73,7 +73,7 @@ class SplitView(QWidget):
         if sx - ox > 70:
             self._shadow_text(p, ox + 12, label_y, "BEFORE", QColor("#ffffff"))
         if ox + disp.width() - sx > 70:
-            self._shadow_text(p, sx + 12, label_y, "AFTER", QColor("#a78bfa"))
+            self._shadow_text(p, sx + 12, label_y, "AFTER", QColor("#22c55e"))
 
         p.end()
 
@@ -125,7 +125,7 @@ class PreviewDialog(QDialog):
         self.setWindowTitle("Preview — Before / After")
         self.setModal(True)
         self.resize(940, 640)
-        self.setStyleSheet("QDialog { background: #0d0d1a; color: #f1f5f9; }"
+        self.setStyleSheet("QDialog { background: #ffffff; color: #0f172a; }"
                            "QLabel  { background: transparent; }")
         self._build_ui(before_path, after_path, scale, method_label)
 
@@ -137,7 +137,7 @@ class PreviewDialog(QDialog):
         # header
         hdr = QWidget()
         hdr.setFixedHeight(52)
-        hdr.setStyleSheet("background:#12121f; border-bottom:1px solid #1e1e38;")
+        hdr.setStyleSheet("background:#f8fafc; border-bottom:1px solid #e2e8f0;")
         hl = QHBoxLayout(hdr)
         hl.setContentsMargins(20, 0, 20, 0)
         title = QLabel(f"Before / After  ·  {scale}×  ·  {method_label}")
@@ -156,7 +156,7 @@ class PreviewDialog(QDialog):
         # info / action bar
         bar = QWidget()
         bar.setFixedHeight(56)
-        bar.setStyleSheet("background:#12121f; border-top:1px solid #1e1e38;")
+        bar.setStyleSheet("background:#f8fafc; border-top:1px solid #e2e8f0;")
         bl = QHBoxLayout(bar)
         bl.setContentsMargins(20, 0, 20, 0)
         bl.setSpacing(16)
@@ -171,7 +171,7 @@ class PreviewDialog(QDialog):
             lbl_b, lbl_a = QLabel("Original"), QLabel("Upscaled")
 
         lbl_b.setStyleSheet("font-size:11px; color:#64748b;")
-        lbl_a.setStyleSheet("font-size:11px; color:#a78bfa; font-weight:600;")
+        lbl_a.setStyleSheet("font-size:11px; color:#22c55e; font-weight:600;")
         hint = QLabel("Drag divider to compare")
         hint.setStyleSheet("font-size:10px; color:#334155;")
 
@@ -214,13 +214,13 @@ class PreviewDialog(QDialog):
     def _btn_style(secondary: bool) -> str:
         if secondary:
             return """QPushButton {
-                background:#1e1e35; color:#94a3b8;
-                border:1px solid #2a2a4a; border-radius:8px;
+                background:#ffffff; color:#94a3b8;
+                border:1px solid #e2e8f0; border-radius:8px;
                 padding:8px 18px; font-size:12px; font-weight:600;
-            } QPushButton:hover { background:#252545; color:#f1f5f9; border-color:#7c3aed; }"""
+            } QPushButton:hover { background:#f0fdf4; color:#f1f5f9; border-color:#16a34a; }"""
         return """QPushButton {
             background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
-                stop:0 #7c3aed, stop:1 #3b82f6);
+                stop:0 #16a34a, stop:1 #15803d);
             color:#fff; border:none; border-radius:8px;
             padding:8px 22px; font-size:12px; font-weight:700;
         } QPushButton:hover {

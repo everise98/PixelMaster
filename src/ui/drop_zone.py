@@ -27,18 +27,18 @@ class DropZone(QFrame):
 
         self._icon = QLabel("⬆", self)
         self._icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._icon.setStyleSheet("font-size: 32px; color: #2a2a4a; background: transparent;")
+        self._icon.setStyleSheet("font-size: 32px; color: #0f172a; background: transparent;")
 
         self._title = QLabel("Drop images here", self)
         self._title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._title.setStyleSheet(
-            "font-size: 15px; font-weight: 600; color: #475569; background: transparent;"
+            "font-size: 15px; font-weight: 600; color: #64748b; background: transparent;"
         )
 
         self._sub = QLabel("JPG · PNG  —  multiple files supported", self)
         self._sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._sub.setStyleSheet(
-            "font-size: 11px; color: #334155; background: transparent;"
+            "font-size: 11px; color: #64748b; background: transparent;"
         )
 
         browse_btn = QPushButton("Browse Files", self)
@@ -86,14 +86,14 @@ class DropZone(QFrame):
         self.style().unpolish(self)
         self.style().polish(self)
         if active:
-            self._icon.setStyleSheet("font-size: 36px; color: #7c3aed; background: transparent;")
+            self._icon.setStyleSheet("font-size: 36px; color: #16a34a; background: transparent;")
             self._title.setStyleSheet(
-                "font-size: 15px; font-weight: 600; color: #a78bfa; background: transparent;"
+                "font-size: 15px; font-weight: 600; color: #22c55e; background: transparent;"
             )
         else:
-            self._icon.setStyleSheet("font-size: 32px; color: #2a2a4a; background: transparent;")
+            self._icon.setStyleSheet("font-size: 32px; color: #0f172a; background: transparent;")
             self._title.setStyleSheet(
-                "font-size: 15px; font-weight: 600; color: #475569; background: transparent;"
+                "font-size: 15px; font-weight: 600; color: #64748b; background: transparent;"
             )
 
     def _open_dialog(self):

@@ -37,7 +37,7 @@ class ImageCard(QFrame):
         self._thumb.setFixedSize(48, 48)
         self._thumb.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._thumb.setStyleSheet(
-            "border-radius: 6px; background-color: #1e1e35; color: #475569; font-size: 10px;"
+            "border-radius: 6px; background-color: #ffffff; color: #64748b; font-size: 10px;"
         )
         pix = QPixmap(self.path)
         if not pix.isNull():
@@ -56,13 +56,13 @@ class ImageCard(QFrame):
 
         self._name_label = QLabel(self._short_name(), self)
         self._name_label.setStyleSheet(
-            "font-size: 12px; font-weight: 600; color: #e2e8f0; background: transparent;"
+            "font-size: 12px; font-weight: 600; color: #0f172a; background: transparent;"
         )
         self._name_label.setToolTip(self.path)
 
         self._size_label = QLabel(f"{self.orig_w} × {self.orig_h}", self)
         self._size_label.setStyleSheet(
-            "font-size: 10px; color: #475569; background: transparent;"
+            "font-size: 10px; color: #64748b; background: transparent;"
         )
 
         info.addWidget(self._name_label)
@@ -78,14 +78,14 @@ class ImageCard(QFrame):
         self._preview_btn.setStyleSheet("""
             QPushButton {
                 background: transparent;
-                color: #7c3aed;
-                border: 1px solid #7c3aed;
+                color: #16a34a;
+                border: 1px solid #16a34a;
                 border-radius: 6px;
                 font-size: 10px;
                 font-weight: 600;
             }
             QPushButton:hover {
-                background: #7c3aed;
+                background: #16a34a;
                 color: #ffffff;
             }
         """)

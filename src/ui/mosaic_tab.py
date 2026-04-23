@@ -392,7 +392,7 @@ class MosaicTab(QWidget):
 
         self._mode_hint = QLabel("Freehand circle brush")
         self._mode_hint.setStyleSheet(
-            "font-size: 10px; color: #334155; background: transparent;"
+            "font-size: 10px; color: #64748b; background: transparent;"
         )
         layout.addWidget(self._mode_hint)
         layout.addSpacing(18)
@@ -403,7 +403,7 @@ class MosaicTab(QWidget):
         layout.addSpacing(8)
         self._brush_val_lbl = QLabel("30 px")
         self._brush_val_lbl.setStyleSheet(
-            "font-size: 11px; color: #7c3aed; background: transparent;"
+            "font-size: 11px; color: #16a34a; background: transparent;"
         )
         self._brush_slider = QSlider(Qt.Orientation.Horizontal)
         self._brush_slider.setRange(5, 200)
@@ -428,7 +428,7 @@ class MosaicTab(QWidget):
         layout.addSpacing(8)
         self._strength_val_lbl = QLabel("Medium (15)")
         self._strength_val_lbl.setStyleSheet(
-            "font-size: 11px; color: #7c3aed; background: transparent;"
+            "font-size: 11px; color: #16a34a; background: transparent;"
         )
         self._strength_slider = QSlider(Qt.Orientation.Horizontal)
         self._strength_slider.setRange(1, 50)
@@ -486,8 +486,8 @@ class MosaicTab(QWidget):
         self._status_lbl = QLabel("Open or drag an image to get started")
         self._status_lbl.setFixedHeight(30)
         self._status_lbl.setStyleSheet(
-            "font-size: 11px; color: #475569; background: #0a0a14;"
-            "border-top: 1px solid #1e1e38; padding: 0 16px;"
+            "font-size: 11px; color: #64748b; background: #f1f5f9;"
+            "border-top: 1px solid #e2e8f0; padding: 0 16px;"
         )
         layout.addWidget(self._status_lbl)
         return container
