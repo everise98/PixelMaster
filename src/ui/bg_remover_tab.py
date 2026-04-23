@@ -55,8 +55,8 @@ class DownloadDialog(QDialog):
             Qt.WindowType.CustomizeWindowHint
         )
         self.setStyleSheet("""
-            QDialog { background: #f0f4f0; }
-            QLabel  { color: #0f1a08; background: transparent; }
+            QDialog { background: #ffffff; }
+            QLabel  { color: #1a2e1f; background: transparent; }
         """)
 
         layout = QVBoxLayout(self)
@@ -64,11 +64,11 @@ class DownloadDialog(QDialog):
         layout.setSpacing(12)
 
         title = QLabel("Downloading u2net model")
-        title.setStyleSheet("font-size: 15px; font-weight: 700; color: #1a4a00;")
+        title.setStyleSheet("font-size: 15px; font-weight: 700; color: #1a2e1f;")
         layout.addWidget(title)
 
         self._sub = QLabel("First-time setup — ~176 MB, downloaded once")
-        self._sub.setStyleSheet("font-size: 11px; color: #5a7a40;")
+        self._sub.setStyleSheet("font-size: 11px; color: #6b8a72;")
         layout.addWidget(self._sub)
 
         self._bar = QProgressBar()
@@ -89,7 +89,7 @@ class DownloadDialog(QDialog):
         layout.addWidget(self._bar)
 
         self._pct_lbl = QLabel("0%")
-        self._pct_lbl.setStyleSheet("font-size: 11px; color: #3a8a00; font-weight: 600;")
+        self._pct_lbl.setStyleSheet("font-size: 11px; color: #2db558; font-weight: 600;")
         layout.addWidget(self._pct_lbl)
 
         self._worker = DownloadWorker()
@@ -158,10 +158,10 @@ class ImagePreview(QWidget):
     def paintEvent(self, _event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-        painter.fillRect(self.rect(), QColor(240, 248, 234))
+        painter.fillRect(self.rect(), QColor(248, 250, 251))
 
         if self._pixmap is None:
-            painter.setPen(QColor(100, 150, 70))
+            painter.setPen(QColor(147, 160, 154))
             painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter,
                              self._placeholder)
             painter.end()
@@ -178,8 +178,8 @@ class ImagePreview(QWidget):
             cell = max(6, dw // 32)
             for r in range(0, dh, cell):
                 for c in range(0, dw, cell):
-                    col = QColor(210, 225, 200) if (r // cell + c // cell) % 2 == 0 \
-                          else QColor(240, 248, 234)
+                    col = QColor(210, 218, 212) if (r // cell + c // cell) % 2 == 0 \
+                          else QColor(240, 244, 241)
                     painter.fillRect(ox + c, oy + r, cell, cell, col)
 
         painter.drawPixmap(ox, oy,
@@ -188,7 +188,7 @@ class ImagePreview(QWidget):
                 Qt.TransformationMode.SmoothTransformation))
 
         # bottom caption
-        painter.setPen(QColor(100, 150, 70))
+        painter.setPen(QColor(107, 138, 114))
         cap_rect = self.rect().adjusted(0, self.height() - 22, 0, 0)
         painter.drawText(cap_rect, Qt.AlignmentFlag.AlignCenter,
                          "Original" if "Original" in self._placeholder else "Result")
@@ -253,8 +253,8 @@ class BgRemoverTab(QWidget):
             "Processing time:\n~3–10 sec (CPU)"
         )
         info.setStyleSheet(
-            "font-size: 10px; color: #5a7a40; background: #eaffd0;"
-            "border: 1px solid #b4ff2e; border-radius: 8px;"
+            "font-size: 10px; color: #6b8a72; background: #f0fdf4;"
+            "border: 1px solid #93F1A5; border-radius: 8px;"
             "padding: 10px;"
         )
         info.setWordWrap(True)
@@ -300,8 +300,8 @@ class BgRemoverTab(QWidget):
         self._status_lbl = QLabel("Open or drag an image to get started")
         self._status_lbl.setFixedHeight(30)
         self._status_lbl.setStyleSheet(
-            "font-size: 11px; color: #5a7a40; background: #e8f0e0;"
-            "border-top: 1px solid #c8ddb0; padding: 0 16px;"
+            "font-size: 11px; color: #6b8a72; background: #f8fafb;"
+            "border-top: 1px solid #ddeee2; padding: 0 16px;"
         )
         layout.addWidget(self._status_lbl)
         return container

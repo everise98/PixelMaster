@@ -254,10 +254,10 @@ class MosaicCanvas(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.fillRect(self.rect(), QColor(236, 244, 230))
+        painter.fillRect(self.rect(), QColor(248, 250, 251))
 
         if self._result_bgr is None:
-            painter.setPen(QColor(100, 150, 60))
+            painter.setPen(QColor(147, 160, 154))
             painter.drawText(
                 self.rect(), Qt.AlignmentFlag.AlignCenter,
                 "Drop image here  or  click  Open Image",
@@ -392,7 +392,7 @@ class MosaicTab(QWidget):
 
         self._mode_hint = QLabel("Freehand circle brush")
         self._mode_hint.setStyleSheet(
-            "font-size: 10px; color: #5a7a40; background: transparent;"
+            "font-size: 10px; color: #6b8a72; background: transparent;"
         )
         layout.addWidget(self._mode_hint)
         layout.addSpacing(18)
@@ -403,7 +403,7 @@ class MosaicTab(QWidget):
         layout.addSpacing(8)
         self._brush_val_lbl = QLabel("30 px")
         self._brush_val_lbl.setStyleSheet(
-            "font-size: 11px; color: #3a8a00; background: transparent;"
+            "font-size: 11px; color: #2db558; background: transparent;"
         )
         self._brush_slider = QSlider(Qt.Orientation.Horizontal)
         self._brush_slider.setRange(5, 200)
@@ -428,7 +428,7 @@ class MosaicTab(QWidget):
         layout.addSpacing(8)
         self._strength_val_lbl = QLabel("Medium (15)")
         self._strength_val_lbl.setStyleSheet(
-            "font-size: 11px; color: #3a8a00; background: transparent;"
+            "font-size: 11px; color: #2db558; background: transparent;"
         )
         self._strength_slider = QSlider(Qt.Orientation.Horizontal)
         self._strength_slider.setRange(1, 50)
@@ -486,8 +486,8 @@ class MosaicTab(QWidget):
         self._status_lbl = QLabel("Open or drag an image to get started")
         self._status_lbl.setFixedHeight(30)
         self._status_lbl.setStyleSheet(
-            "font-size: 11px; color: #5a7a40; background: #e8f0e0;"
-            "border-top: 1px solid #c8ddb0; padding: 0 16px;"
+            "font-size: 11px; color: #6b8a72; background: #f8fafb;"
+            "border-top: 1px solid #ddeee2; padding: 0 16px;"
         )
         layout.addWidget(self._status_lbl)
         return container

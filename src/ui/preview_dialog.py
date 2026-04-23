@@ -40,7 +40,7 @@ class SplitView(QWidget):
         ox = (W - disp.width()) // 2
         oy = (H - disp.height()) // 2
 
-        p.fillRect(0, 0, W, H, QColor("#f0f4f0"))
+        p.fillRect(0, 0, W, H, QColor("#ffffff"))
 
         # BEFORE — left half
         p.setClipRect(ox, oy, max(0, sx - ox), disp.height())
@@ -125,7 +125,7 @@ class PreviewDialog(QDialog):
         self.setWindowTitle("Preview — Before / After")
         self.setModal(True)
         self.resize(940, 640)
-        self.setStyleSheet("QDialog { background: #f0f4f0; color: #0f1a08; }"
+        self.setStyleSheet("QDialog { background: #ffffff; color: #1a2e1f; }"
                            "QLabel  { background: transparent; }")
         self._build_ui(before_path, after_path, scale, method_label)
 
@@ -137,13 +137,13 @@ class PreviewDialog(QDialog):
         # header
         hdr = QWidget()
         hdr.setFixedHeight(52)
-        hdr.setStyleSheet("background:#e8f0e0; border-bottom:1px solid #c8ddb0;")
+        hdr.setStyleSheet("background:#f8fafb; border-bottom:1px solid #ddeee2;")
         hl = QHBoxLayout(hdr)
         hl.setContentsMargins(20, 0, 20, 0)
         title = QLabel(f"Before / After  ·  {scale}×  ·  {method_label}")
-        title.setStyleSheet("font-size:13px; font-weight:600; color:#1a4a00;")
+        title.setStyleSheet("font-size:13px; font-weight:600; color:#1a2e1f;")
         fname = QLabel(os.path.basename(before_path))
-        fname.setStyleSheet("font-size:11px; color:#5a7a40;")
+        fname.setStyleSheet("font-size:11px; color:#6b8a72;")
         hl.addWidget(title)
         hl.addStretch()
         hl.addWidget(fname)
@@ -156,7 +156,7 @@ class PreviewDialog(QDialog):
         # info / action bar
         bar = QWidget()
         bar.setFixedHeight(56)
-        bar.setStyleSheet("background:#e8f0e0; border-top:1px solid #c8ddb0;")
+        bar.setStyleSheet("background:#f8fafb; border-top:1px solid #ddeee2;")
         bl = QHBoxLayout(bar)
         bl.setContentsMargins(20, 0, 20, 0)
         bl.setSpacing(16)
@@ -170,10 +170,10 @@ class PreviewDialog(QDialog):
         except Exception:
             lbl_b, lbl_a = QLabel("Original"), QLabel("Upscaled")
 
-        lbl_b.setStyleSheet("font-size:11px; color:#5a7a40;")
-        lbl_a.setStyleSheet("font-size:11px; color:#3a8a00; font-weight:600;")
+        lbl_b.setStyleSheet("font-size:11px; color:#6b8a72;")
+        lbl_a.setStyleSheet("font-size:11px; color:#2db558; font-weight:600;")
         hint = QLabel("Drag divider to compare")
-        hint.setStyleSheet("font-size:10px; color:#5a7a40;")
+        hint.setStyleSheet("font-size:10px; color:#6b8a72;")
 
         bl.addWidget(lbl_b)
         bl.addWidget(lbl_a)
