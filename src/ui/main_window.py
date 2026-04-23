@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
 
         method_hint = QLabel("Real-ESRGAN General: recommended · fast AI\nReal-ESRGAN Plus: best quality · slower\nMulti-scale: no AI · fastest")
         method_hint.setStyleSheet(
-            "font-size: 10px; color: #4a6a35; background: transparent; line-height: 1.4;"
+            "font-size: 10px; color: #5a7a40; background: transparent; line-height: 1.4;"
         )
         layout.addWidget(method_hint)
         layout.addSpacing(22)
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
 
         self._folder_label = QLabel("Same as source file")
         self._folder_label.setStyleSheet(
-            "font-size: 10px; color: #4a6a35; background: transparent;"
+            "font-size: 10px; color: #5a7a40; background: transparent;"
         )
         self._folder_label.setWordWrap(True)
         layout.addSpacing(4)
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self._empty_label = QLabel("Add images above to get started")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._empty_label.setStyleSheet(
-            "font-size: 12px; color: #4a6a35; background: transparent; padding: 20px;"
+            "font-size: 12px; color: #5a7a40; background: transparent; padding: 20px;"
         )
         self._queue_layout.addWidget(self._empty_label)
         self._queue_layout.addStretch()
@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
 
         self._count_label = QLabel("")
         self._count_label.setStyleSheet(
-            "font-size: 12px; color: #4a6a35; background: transparent;"
+            "font-size: 12px; color: #5a7a40; background: transparent;"
         )
         action_row.addWidget(self._count_label)
         action_row.addStretch()
@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
     def _build_footer(self) -> QWidget:
         bar = QWidget()
         bar.setFixedHeight(40)
-        bar.setStyleSheet("background-color: #060a10; border-top: 1px solid #b4ff2e;")
+        bar.setStyleSheet("background-color: #d8edc0; border-top: 1px solid #b4ff2e;")
 
         layout = QHBoxLayout(bar)
         layout.setContentsMargins(20, 0, 20, 0)
@@ -252,11 +252,11 @@ class MainWindow(QMainWindow):
 
         self._status_dot = QLabel("●")
         self._status_dot.setStyleSheet(
-            "font-size: 10px; color: #b4ff2e; background: transparent;"
+            "font-size: 10px; color: #3a8a00; background: transparent;"
         )
         self._status_text = QLabel("Ready")
         self._status_text.setStyleSheet(
-            "font-size: 11px; color: #4a6a35; background: transparent;"
+            "font-size: 11px; color: #5a7a40; background: transparent;"
         )
 
         self._progress_bar = QProgressBar()
@@ -268,7 +268,7 @@ class MainWindow(QMainWindow):
 
         author_label = QLabel(AUTHOR)
         author_label.setStyleSheet(
-            "font-size: 10px; color: #3a5a30; background: transparent; letter-spacing: 0.5px;"
+            "font-size: 10px; color: #7a9a60; background: transparent; letter-spacing: 0.5px;"
         )
 
         layout.addWidget(self._status_dot)
@@ -365,7 +365,7 @@ class MainWindow(QMainWindow):
             self._folder_label.setText(short)
             self._folder_label.setToolTip(folder)
             self._folder_label.setStyleSheet(
-                "font-size: 10px; color: #b4ff2e; background: transparent;"
+                "font-size: 10px; color: #3a8a00; background: transparent;"
             )
 
     def _reset_folder(self):
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow):
         self._folder_label.setText("Same as source file")
         self._folder_label.setToolTip("")
         self._folder_label.setStyleSheet(
-            "font-size: 10px; color: #4a6a35; background: transparent;"
+            "font-size: 10px; color: #5a7a40; background: transparent;"
         )
 
     def _start_processing(self):

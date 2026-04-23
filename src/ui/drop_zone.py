@@ -27,18 +27,18 @@ class DropZone(QFrame):
 
         self._icon = QLabel("⬆", self)
         self._icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._icon.setStyleSheet("font-size: 32px; color: #4a6a35; background: transparent;")
+        self._icon.setStyleSheet("font-size: 32px; color: #5a7a40; background: transparent;")
 
         self._title = QLabel("Drop images here", self)
         self._title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._title.setStyleSheet(
-            "font-size: 15px; font-weight: 600; color: #5c7a4a; background: transparent;"
+            "font-size: 15px; font-weight: 600; color: #5a7a40; background: transparent;"
         )
 
         self._sub = QLabel("JPG · PNG  —  multiple files supported", self)
         self._sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._sub.setStyleSheet(
-            "font-size: 11px; color: #5c7a4a; background: transparent;"
+            "font-size: 11px; color: #5a7a40; background: transparent;"
         )
 
         browse_btn = QPushButton("Browse Files", self)
@@ -91,9 +91,9 @@ class DropZone(QFrame):
                 "font-size: 15px; font-weight: 600; color: #b4ff2e; background: transparent;"
             )
         else:
-            self._icon.setStyleSheet("font-size: 32px; color: #4a6a35; background: transparent;")
+            self._icon.setStyleSheet("font-size: 32px; color: #5a7a40; background: transparent;")
             self._title.setStyleSheet(
-                "font-size: 15px; font-weight: 600; color: #5c7a4a; background: transparent;"
+                "font-size: 15px; font-weight: 600; color: #5a7a40; background: transparent;"
             )
 
     def _open_dialog(self):
