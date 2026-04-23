@@ -214,26 +214,18 @@ class PreviewDialog(QDialog):
     def _btn_style(secondary: bool) -> str:
         if secondary:
             return """QPushButton {
-                background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
-                    stop:0 #ffffff, stop:1 #f0f7f2);
-                color:#6b8a72; border:1px solid #ddeee2; border-radius:8px;
+                background-color:#ffffff; color:#4a5e50;
+                border:1px solid #d4e0d8; border-radius:8px;
                 padding:8px 18px; font-size:12px; font-weight:600;
             } QPushButton:hover {
-                background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
-                    stop:0 #f0fdf4, stop:1 #dcf8e4);
-                color:#1a2e1f; border-color:#93F1A5;
+                background-color:#f4fdf6; color:#1a2e1f; border-color:#93F1A5;
             }"""
         return """QPushButton {
-            background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
-                stop:0 #c8f8d4, stop:0.35 #93F1A5,
-                stop:0.7 #5ed47a, stop:1 #3abf58);
-            color:#0d1f10; border:1px solid #5ed47a; border-radius:8px;
-            padding:8px 22px; font-size:12px; font-weight:700;
+            background-color:#1a2e1f;
+            color:#ffffff; border:none; border-radius:8px;
+            padding:8px 22px; font-size:12px; font-weight:600;
         } QPushButton:hover {
-            background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
-                stop:0 #e0fde8, stop:0.35 #b8f5c4,
-                stop:0.7 #7ae694, stop:1 #52cc6e);
-            border-color:#93F1A5;
+            background-color:#2d4a32;
         }"""
 
     def _open_file(self):

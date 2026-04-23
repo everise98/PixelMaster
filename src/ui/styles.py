@@ -36,9 +36,8 @@ QFrame#card {
     border-radius: 14px;
 }
 QFrame#settingsPanel {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 #ffffff, stop:1 #f0fdf4);
-    border-right: 1px solid #ddeee2;
+    background-color: #fafcfb;
+    border-right: 1px solid #e2ebe4;
 }
 
 /* ── Labels ── */
@@ -61,26 +60,23 @@ QLabel#appSub {
 
 /* ── Scale Buttons ── */
 QPushButton#scaleBtn {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #ffffff, stop:1 #f0f7f2);
+    background-color: #ffffff;
     color: #6b8a72;
     border: 1px solid #ddeee2;
-    border-radius: 8px;
+    border-radius: 7px;
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
 }
 QPushButton#scaleBtn:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #f0fdf4, stop:1 #dcf8e4);
+    background-color: #f4fdf6;
     color: #1a2e1f;
     border-color: #93F1A5;
 }
 QPushButton#scaleBtn[active="true"] {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #c8f8d4, stop:0.4 #93F1A5, stop:1 #5ed47a);
-    color: #0d1f10;
-    border-color: #5ed47a;
+    background-color: #1a2e1f;
+    color: #ffffff;
+    border-color: #1a2e1f;
 }
 
 /* ── Method Combo ── */
@@ -126,63 +122,53 @@ QLineEdit:hover { border-color: #b8dfc0; }
 
 /* ── Browse Button ── */
 QPushButton#browseBtn {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #ffffff, stop:1 #f0f7f2);
-    color: #6b8a72;
-    border: 1px solid #ddeee2;
-    border-radius: 8px;
+    background-color: #ffffff;
+    color: #4a5e50;
+    border: 1px solid #d4e0d8;
+    border-radius: 7px;
     padding: 7px 14px;
     font-size: 12px;
 }
 QPushButton#browseBtn:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #f0fdf4, stop:1 #dcf8e4);
+    background-color: #f4fdf6;
     color: #1a2e1f;
     border-color: #93F1A5;
 }
 
 /* ── Primary Action Button ── */
 QPushButton#primaryBtn {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #c8f8d4, stop:0.35 #93F1A5, stop:0.7 #5ed47a, stop:1 #3abf58);
-    color: #0d1f10;
-    border: 1px solid #5ed47a;
-    border-radius: 10px;
+    background-color: #1a2e1f;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
     padding: 11px 28px;
     font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 QPushButton#primaryBtn:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #e0fde8, stop:0.35 #b8f5c4, stop:0.7 #7ae694, stop:1 #52cc6e);
-    border-color: #93F1A5;
+    background-color: #2d4a32;
 }
 QPushButton#primaryBtn:pressed {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #2faa4a, stop:0.4 #38b857, stop:1 #4acf60);
-    border-color: #2faa4a;
+    background-color: #0d1f10;
 }
 QPushButton#primaryBtn:disabled {
-    background: #e8f0ea;
-    border-color: #d0ddd2;
-    color: #a0b8a8;
+    background-color: #e2e8e4;
+    color: #a0b0a4;
 }
 
 /* ── Secondary Button ── */
 QPushButton#secondaryBtn {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #ffffff, stop:1 #f5faf6);
-    color: #6b8a72;
-    border: 1px solid #ddeee2;
-    border-radius: 10px;
+    background-color: #ffffff;
+    color: #4a5e50;
+    border: 1px solid #d4e0d8;
+    border-radius: 8px;
     padding: 11px 20px;
     font-size: 13px;
     font-weight: 600;
 }
 QPushButton#secondaryBtn:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #f0fdf4, stop:1 #dcf8e4);
+    background-color: #f4fdf6;
     color: #1a2e1f;
     border-color: #93F1A5;
 }
@@ -214,14 +200,12 @@ QFrame#dropZone[drag="true"] {
 
 /* ── Image Card ── */
 QFrame#imageCard {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #ffffff, stop:1 #f8fdf9);
+    background-color: #ffffff;
     border: 1px solid #e2ebe4;
     border-radius: 10px;
 }
 QFrame#imageCard:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #f0fdf4, stop:1 #e4f8ea);
+    background-color: #f4fdf6;
     border-color: #93F1A5;
 }
 

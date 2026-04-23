@@ -78,15 +78,16 @@ class ImageCard(QFrame):
         self._preview_btn.setStyleSheet("""
             QPushButton {
                 background: transparent;
-                color: #2db558;
-                border: 1px solid #93F1A5;
+                color: #4a5e50;
+                border: 1px solid #d4e0d8;
                 border-radius: 6px;
                 font-size: 10px;
                 font-weight: 600;
             }
             QPushButton:hover {
-                background: #93F1A5;
-                color: #0d1f10;
+                background: #f4fdf6;
+                color: #1a2e1f;
+                border-color: #93F1A5;
             }
         """)
         self._preview_btn.clicked.connect(
