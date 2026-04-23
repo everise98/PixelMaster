@@ -62,6 +62,10 @@ class MainWindow(QMainWindow):
         from src.ui.mosaic_tab import MosaicTab
         self._tabs.addTab(MosaicTab(), "◈  Mosaic")
 
+        # Tab 3 — Background Remover
+        from src.ui.bg_remover_tab import BgRemoverTab
+        self._tabs.addTab(BgRemoverTab(), "✂  BG Remover")
+
         root_layout.addWidget(self._tabs, stretch=1)
         root_layout.addWidget(self._build_footer())
 
@@ -404,7 +408,13 @@ class MainWindow(QMainWindow):
 
     def _on_image_done(self, path: str, success: bool, msg: str):
         if path in self._queue:
-            self._queue[path].set_status("done" if success else "error", msg)
+            if success:
+                status = "done"
+            elif msg == "Skipped":
+                status = "skipped"
+            else:
+                status = "error"
+            self._queue[path].set_status(status, msg)
 
     def _on_all_done(self, saved: int, errored: int, skipped: int):
         self._worker = None

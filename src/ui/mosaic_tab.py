@@ -1,4 +1,5 @@
 import os
+import math
 import numpy as np
 import cv2
 from PIL import Image as PilImage
@@ -7,22 +8,33 @@ from PyQt6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QFrame, QLabel,
     QPushButton, QComboBox, QSlider, QFileDialog, QSizePolicy,
 )
-from PyQt6.QtCore import Qt, QPoint
-from PyQt6.QtGui import QPainter, QColor, QImage, QPixmap, QKeySequence, QShortcut
+from PyQt6.QtCore import Qt, QPoint, QRect
+from PyQt6.QtGui import (
+    QPainter, QColor, QImage, QPixmap,
+    QPen, QKeySequence, QShortcut,
+)
 
 
 class MosaicCanvas(QWidget):
-    """Paintable canvas — freehand circle brush writes a float mask."""
+    """Paintable canvas — supports Brush / Box / Circle selection modes."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._orig_bgr:   np.ndarray | None = None
-        self._result_bgr: np.ndarray | None = None
-        self._mask:       np.ndarray | None = None   # float32 H×W, 0-1
-        self._undo_stack: list[tuple]        = []
-        self._brush_px   = 30    # brush radius in screen pixels
+        self._orig_bgr:    np.ndarray | None = None
+        self._result_bgr:  np.ndarray | None = None
+        self._mask:        np.ndarray | None = None   # float32 H×W, 0-1
+        self._undo_stack:  list[tuple]        = []
+
+        # brush
+        self._brush_px   = 30
         self._painting   = False
         self._last_pos:  QPoint | None = None
+
+        # box / circle drag
+        self._mode       = "brush"   # "brush" | "box" | "circle"
+        self._drag_start: QPoint | None = None
+        self._drag_cur:   QPoint | None = None
+
         self._source_path = ""
 
         self.setAcceptDrops(True)
@@ -37,14 +49,22 @@ class MosaicCanvas(QWidget):
             pil = PilImage.open(path).convert("RGB")
             arr = np.array(pil)
             bgr = cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
-            self._orig_bgr    = bgr
-            self._result_bgr  = bgr.copy()
-            h, w              = bgr.shape[:2]
-            self._mask        = np.zeros((h, w), dtype=np.float32)
+            self._orig_bgr   = bgr
+            self._result_bgr = bgr.copy()
+            h, w             = bgr.shape[:2]
+            self._mask       = np.zeros((h, w), dtype=np.float32)
             self._undo_stack.clear()
+            self._drag_start = self._drag_cur = None
             self.update()
         except Exception as e:
             print(f"MosaicCanvas.load_image error: {e}")
+
+    def set_mode(self, mode: str):
+        self._mode       = mode
+        self._drag_start = None
+        self._drag_cur   = None
+        self._painting   = False
+        self.update()
 
     def set_brush_size(self, px: int):
         self._brush_px = px
@@ -77,7 +97,6 @@ class MosaicCanvas(QWidget):
                                interpolation=cv2.INTER_LINEAR)
             tiled = cv2.resize(small, (w, h), interpolation=cv2.INTER_NEAREST)
             out   = src * (1 - mask3) + tiled * mask3
-
         else:  # blur
             k   = strength * 2 + 1
             blr = cv2.GaussianBlur(src, (k, k), 0)
@@ -108,7 +127,6 @@ class MosaicCanvas(QWidget):
     # ── coordinate helpers ────────────────────────────────────────────────────
 
     def _img_rect(self) -> tuple[int, int, int, int, float]:
-        """Returns (ox, oy, dw, dh, scale) for the displayed image rect."""
         if self._orig_bgr is None:
             return 0, 0, 0, 0, 1.0
         h, w   = self._orig_bgr.shape[:2]
@@ -123,9 +141,15 @@ class MosaicCanvas(QWidget):
         ox, oy, _, _, scale = self._img_rect()
         return int((wx - ox) / scale), int((wy - oy) / scale)
 
-    # ── painting ──────────────────────────────────────────────────────────────
+    def _clamp_img(self, ix: int, iy: int) -> tuple[int, int]:
+        if self._mask is None:
+            return ix, iy
+        h, w = self._mask.shape
+        return max(0, min(ix, w - 1)), max(0, min(iy, h - 1))
 
-    def _draw_circle(self, ix: int, iy: int):
+    # ── brush painting ────────────────────────────────────────────────────────
+
+    def _draw_brush_circle(self, ix: int, iy: int):
         if self._mask is None:
             return
         h, w = self._mask.shape
@@ -136,7 +160,6 @@ class MosaicCanvas(QWidget):
         cv2.circle(self._mask, (ix, iy), r, 1.0, -1)
 
     def _stroke_to(self, p2: QPoint):
-        """Interpolate circles from last position to p2 for smooth strokes."""
         if self._mask is None or self._last_pos is None:
             return
         ix1, iy1 = self._to_img(self._last_pos.x(), self._last_pos.y())
@@ -144,30 +167,70 @@ class MosaicCanvas(QWidget):
         steps    = max(1, max(abs(ix2 - ix1), abs(iy2 - iy1)))
         for i in range(steps + 1):
             t  = i / steps
-            px = int(ix1 + (ix2 - ix1) * t)
-            py = int(iy1 + (iy2 - iy1) * t)
-            self._draw_circle(px, py)
+            self._draw_brush_circle(
+                int(ix1 + (ix2 - ix1) * t),
+                int(iy1 + (iy2 - iy1) * t),
+            )
+        self.update()
+
+    # ── shape commit (box / circle) ───────────────────────────────────────────
+
+    def _commit_shape(self):
+        if self._mask is None or self._drag_start is None or self._drag_cur is None:
+            return
+        ix1, iy1 = self._clamp_img(*self._to_img(self._drag_start.x(), self._drag_start.y()))
+        ix2, iy2 = self._clamp_img(*self._to_img(self._drag_cur.x(),   self._drag_cur.y()))
+
+        if self._mode == "box":
+            cv2.rectangle(
+                self._mask,
+                (min(ix1, ix2), min(iy1, iy2)),
+                (max(ix1, ix2), max(iy1, iy2)),
+                1.0, -1,
+            )
+        elif self._mode == "circle":
+            r = int(math.sqrt((ix2 - ix1) ** 2 + (iy2 - iy1) ** 2))
+            cv2.circle(self._mask, (ix1, iy1), r, 1.0, -1)
+
         self.update()
 
     # ── mouse events ──────────────────────────────────────────────────────────
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton and self._orig_bgr is not None:
-            self._painting  = True
-            self._last_pos  = event.position().toPoint()
-            ix, iy          = self._to_img(event.position().x(), event.position().y())
-            self._draw_circle(ix, iy)
+        if event.button() != Qt.MouseButton.LeftButton or self._orig_bgr is None:
+            return
+        if self._mode == "brush":
+            self._painting = True
+            self._last_pos = event.position().toPoint()
+            ix, iy = self._to_img(event.position().x(), event.position().y())
+            self._draw_brush_circle(ix, iy)
+            self.update()
+        else:
+            self._drag_start = event.position().toPoint()
+            self._drag_cur   = event.position().toPoint()
             self.update()
 
     def mouseMoveEvent(self, event):
-        if self._painting and self._last_pos is not None:
-            cur = event.position().toPoint()
-            self._stroke_to(cur)
-            self._last_pos = cur
+        if self._mode == "brush":
+            if self._painting and self._last_pos is not None:
+                cur = event.position().toPoint()
+                self._stroke_to(cur)
+                self._last_pos = cur
+        else:
+            if self._drag_start is not None:
+                self._drag_cur = event.position().toPoint()
+                self.update()
 
     def mouseReleaseEvent(self, _event):
-        self._painting = False
-        self._last_pos = None
+        if self._mode == "brush":
+            self._painting = False
+            self._last_pos = None
+        else:
+            if self._drag_start is not None:
+                self._commit_shape()
+            self._drag_start = None
+            self._drag_cur   = None
+            self.update()
 
     # ── drag & drop ───────────────────────────────────────────────────────────
 
@@ -181,7 +244,6 @@ class MosaicCanvas(QWidget):
             if os.path.splitext(path)[1].lower() in (".jpg", ".jpeg", ".png"):
                 self._source_path = path
                 self.load_image(path)
-                # bubble path up to parent tab
                 if hasattr(self.parent(), "_on_canvas_image_loaded"):
                     self.parent()._on_canvas_image_loaded(path)
                 break
@@ -191,6 +253,7 @@ class MosaicCanvas(QWidget):
     def paintEvent(self, _event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.fillRect(self.rect(), QColor(18, 18, 30))
 
         if self._result_bgr is None:
@@ -215,7 +278,7 @@ class MosaicCanvas(QWidget):
         )
         painter.drawPixmap(ox, oy, pix)
 
-        # Mask overlay (semi-transparent purple)
+        # Committed mask overlay
         if self._mask is not None and self._mask.max() > 0:
             alpha = (self._mask * 150).astype(np.uint8)
             rgba  = np.zeros((h, w, 4), dtype=np.uint8)
@@ -223,13 +286,31 @@ class MosaicCanvas(QWidget):
             rgba[:, :, 1] = 58
             rgba[:, :, 2] = 237
             rgba[:, :, 3] = alpha
-            oi  = QImage(rgba.tobytes(), w, h, w * 4, QImage.Format.Format_RGBA8888)
-            op  = QPixmap.fromImage(oi).scaled(
+            oi = QImage(rgba.tobytes(), w, h, w * 4, QImage.Format.Format_RGBA8888)
+            op = QPixmap.fromImage(oi).scaled(
                 dw, dh,
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
             painter.drawPixmap(ox, oy, op)
+
+        # Live drag preview
+        if self._drag_start is not None and self._drag_cur is not None:
+            pen = QPen(QColor(124, 58, 237), 2, Qt.PenStyle.DashLine)
+            painter.setPen(pen)
+            painter.setBrush(QColor(124, 58, 237, 45))
+
+            sx, sy = self._drag_start.x(), self._drag_start.y()
+            cx, cy = self._drag_cur.x(),   self._drag_cur.y()
+
+            if self._mode == "box":
+                painter.drawRect(
+                    min(sx, cx), min(sy, cy),
+                    abs(cx - sx), abs(cy - sy),
+                )
+            elif self._mode == "circle":
+                r = int(math.sqrt((cx - sx) ** 2 + (cy - sy) ** 2))
+                painter.drawEllipse(sx - r, sy - r, r * 2, r * 2)
 
         painter.end()
 
@@ -253,8 +334,6 @@ class MosaicTab(QWidget):
         self._source_path = ""
         self._setup_ui()
 
-    # ── UI construction ───────────────────────────────────────────────────────
-
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -262,9 +341,11 @@ class MosaicTab(QWidget):
         layout.addWidget(self._build_controls())
         layout.addWidget(self._build_canvas_area(), stretch=1)
 
-        # Ctrl+Z shortcut
         undo_sc = QShortcut(QKeySequence("Ctrl+Z"), self)
         undo_sc.activated.connect(self._undo)
+        self._set_mode("brush")
+
+    # ── controls panel ────────────────────────────────────────────────────────
 
     def _build_controls(self) -> QFrame:
         panel = QFrame()
@@ -277,7 +358,7 @@ class MosaicTab(QWidget):
 
         title = QLabel("◈  Mosaic Tool")
         title.setObjectName("appTitle")
-        sub   = QLabel("Paint & apply to selected areas")
+        sub   = QLabel("Select areas & apply effect")
         sub.setObjectName("appSub")
         layout.addWidget(title)
         layout.addWidget(sub)
@@ -292,17 +373,33 @@ class MosaicTab(QWidget):
         layout.addWidget(open_btn)
         layout.addSpacing(24)
 
-        # Effect
-        layout.addWidget(self._section_label("EFFECT"))
+        # ── Selection Mode ────────────────────────────────────────────────────
+        layout.addWidget(self._section_label("SELECTION MODE"))
         layout.addSpacing(8)
-        self._effect_combo = QComboBox()
-        self._effect_combo.addItem("Pixelate (Mosaic)", "pixelate")
-        self._effect_combo.addItem("Gaussian Blur",     "blur")
-        layout.addWidget(self._effect_combo)
-        layout.addSpacing(22)
+        mode_row = QHBoxLayout()
+        mode_row.setSpacing(5)
+        self._mode_btns: dict[str, QPushButton] = {}
+        for key, label in [("brush", "Brush"), ("box", "Box"), ("circle", "Circle")]:
+            btn = QPushButton(label)
+            btn.setObjectName("scaleBtn")
+            btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            btn.setFixedHeight(32)
+            btn.clicked.connect(lambda _, m=key: self._set_mode(m))
+            self._mode_btns[key] = btn
+            mode_row.addWidget(btn)
+        layout.addLayout(mode_row)
+        layout.addSpacing(6)
 
-        # Brush size
-        layout.addWidget(self._section_label("BRUSH SIZE"))
+        self._mode_hint = QLabel("Freehand circle brush")
+        self._mode_hint.setStyleSheet(
+            "font-size: 10px; color: #334155; background: transparent;"
+        )
+        layout.addWidget(self._mode_hint)
+        layout.addSpacing(18)
+
+        # Brush size (only for brush mode)
+        self._brush_section_lbl = self._section_label("BRUSH SIZE")
+        layout.addWidget(self._brush_section_lbl)
         layout.addSpacing(8)
         self._brush_val_lbl = QLabel("30 px")
         self._brush_val_lbl.setStyleSheet(
@@ -315,6 +412,15 @@ class MosaicTab(QWidget):
         layout.addWidget(self._brush_slider)
         layout.addSpacing(4)
         layout.addWidget(self._brush_val_lbl)
+        layout.addSpacing(22)
+
+        # Effect
+        layout.addWidget(self._section_label("EFFECT"))
+        layout.addSpacing(8)
+        self._effect_combo = QComboBox()
+        self._effect_combo.addItem("Pixelate (Mosaic)", "pixelate")
+        self._effect_combo.addItem("Gaussian Blur",     "blur")
+        layout.addWidget(self._effect_combo)
         layout.addSpacing(22)
 
         # Strength
@@ -342,7 +448,7 @@ class MosaicTab(QWidget):
         layout.addWidget(apply_btn)
         layout.addSpacing(8)
 
-        # Undo / Clear row
+        # Undo / Clear
         row = QHBoxLayout()
         row.setSpacing(6)
         undo_btn  = QPushButton("↩  Undo")
@@ -394,6 +500,27 @@ class MosaicTab(QWidget):
 
     # ── slots ─────────────────────────────────────────────────────────────────
 
+    def _set_mode(self, mode: str):
+        self._canvas.set_mode(mode)
+        hints = {
+            "brush":  "Freehand circle brush",
+            "box":    "Drag to draw a rectangle",
+            "circle": "Drag from center outward",
+        }
+        self._mode_hint.setText(hints[mode])
+
+        # show/hide brush size based on mode
+        visible = mode == "brush"
+        self._brush_section_lbl.setVisible(visible)
+        self._brush_slider.setVisible(visible)
+        self._brush_val_lbl.setVisible(visible)
+
+        # update button active state
+        for key, btn in self._mode_btns.items():
+            btn.setProperty("active", "true" if key == mode else "false")
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
+
     def _open_image(self):
         path, _ = QFileDialog.getOpenFileName(
             self, "Open Image", "",
@@ -403,18 +530,17 @@ class MosaicTab(QWidget):
             self._load(path)
 
     def _on_canvas_image_loaded(self, path: str):
-        """Called by canvas after drag-drop."""
         self._source_path = path
         self._status_lbl.setText(
-            f"Loaded: {os.path.basename(path)}  ·  Paint over areas, then Apply Effect"
+            f"Loaded: {os.path.basename(path)}  ·  Select areas, then Apply Effect"
         )
 
     def _load(self, path: str):
-        self._source_path            = path
-        self._canvas._source_path    = path
+        self._source_path         = path
+        self._canvas._source_path = path
         self._canvas.load_image(path)
         self._status_lbl.setText(
-            f"Loaded: {os.path.basename(path)}  ·  Paint over areas, then Apply Effect"
+            f"Loaded: {os.path.basename(path)}  ·  Select areas, then Apply Effect"
         )
 
     def _on_brush_changed(self, v: int):
@@ -430,7 +556,7 @@ class MosaicTab(QWidget):
             self._effect_combo.currentData(),
             self._strength_slider.value(),
         )
-        self._status_lbl.setText("Effect applied  ·  Continue painting or Save As New File")
+        self._status_lbl.setText("Effect applied  ·  Continue selecting or Save As New File")
 
     def _undo(self):
         self._canvas.undo()

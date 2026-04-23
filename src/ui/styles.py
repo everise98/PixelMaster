@@ -300,6 +300,7 @@ STATUS_COLORS = {
     "processing": "#f59e0b",
     "done":       "#22c55e",
     "error":      "#ef4444",
+    "skipped":    "#475569",
 }
 
 STATUS_ICONS = {
@@ -307,4 +308,5 @@ STATUS_ICONS = {
     "processing": "◐",
     "done":       "●",
     "error":      "✕",
+    "skipped":    "–",
 }
