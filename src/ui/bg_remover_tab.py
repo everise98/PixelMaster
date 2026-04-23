@@ -55,8 +55,8 @@ class DownloadDialog(QDialog):
             Qt.WindowType.CustomizeWindowHint
         )
         self.setStyleSheet("""
-            QDialog { background: #ffffff; }
-            QLabel  { color: #0f172a; background: transparent; }
+            QDialog { background: #0a0f1a; }
+            QLabel  { color: #edffd0; background: transparent; }
         """)
 
         layout = QVBoxLayout(self)
@@ -64,11 +64,11 @@ class DownloadDialog(QDialog):
         layout.setSpacing(12)
 
         title = QLabel("Downloading u2net model")
-        title.setStyleSheet("font-size: 15px; font-weight: 700; color: #0f172a;")
+        title.setStyleSheet("font-size: 15px; font-weight: 700; color: #b4ff2e;")
         layout.addWidget(title)
 
         self._sub = QLabel("First-time setup — ~176 MB, downloaded once")
-        self._sub.setStyleSheet("font-size: 11px; color: #64748b;")
+        self._sub.setStyleSheet("font-size: 11px; color: #5c7a4a;")
         layout.addWidget(self._sub)
 
         self._bar = QProgressBar()
@@ -78,18 +78,18 @@ class DownloadDialog(QDialog):
         self._bar.setTextVisible(False)
         self._bar.setStyleSheet("""
             QProgressBar {
-                background: #e2e8f0; border: none; border-radius: 4px;
+                background: #1a2535; border: none; border-radius: 4px;
             }
             QProgressBar::chunk {
                 background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
-                    stop:0 #16a34a, stop:1 #22c55e);
+                    stop:0 #80cc00, stop:1 #b4ff2e);
                 border-radius: 4px;
             }
         """)
         layout.addWidget(self._bar)
 
         self._pct_lbl = QLabel("0%")
-        self._pct_lbl.setStyleSheet("font-size: 11px; color: #16a34a; font-weight: 600;")
+        self._pct_lbl.setStyleSheet("font-size: 11px; color: #b4ff2e; font-weight: 600;")
         layout.addWidget(self._pct_lbl)
 
         self._worker = DownloadWorker()
@@ -158,10 +158,10 @@ class ImagePreview(QWidget):
     def paintEvent(self, _event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-        painter.fillRect(self.rect(), QColor(248, 250, 252))  # #f8fafc
+        painter.fillRect(self.rect(), QColor(8, 12, 20))
 
         if self._pixmap is None:
-            painter.setPen(QColor(148, 163, 184))  # #94a3b8
+            painter.setPen(QColor(74, 106, 53))
             painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter,
                              self._placeholder)
             painter.end()
@@ -178,8 +178,8 @@ class ImagePreview(QWidget):
             cell = max(6, dw // 32)
             for r in range(0, dh, cell):
                 for c in range(0, dw, cell):
-                    col = QColor(210, 210, 210) if (r // cell + c // cell) % 2 == 0 \
-                          else QColor(240, 240, 240)
+                    col = QColor(18, 30, 14) if (r // cell + c // cell) % 2 == 0 \
+                          else QColor(28, 44, 20)
                     painter.fillRect(ox + c, oy + r, cell, cell, col)
 
         painter.drawPixmap(ox, oy,
@@ -188,7 +188,7 @@ class ImagePreview(QWidget):
                 Qt.TransformationMode.SmoothTransformation))
 
         # bottom caption
-        painter.setPen(QColor(100, 116, 139))
+        painter.setPen(QColor(74, 106, 53))
         cap_rect = self.rect().adjusted(0, self.height() - 22, 0, 0)
         painter.drawText(cap_rect, Qt.AlignmentFlag.AlignCenter,
                          "Original" if "Original" in self._placeholder else "Result")
@@ -253,8 +253,8 @@ class BgRemoverTab(QWidget):
             "Processing time:\n~3–10 sec (CPU)"
         )
         info.setStyleSheet(
-            "font-size: 10px; color: #64748b; background: #f0fdf4;"
-            "border: 1px solid #bbf7d0; border-radius: 8px;"
+            "font-size: 10px; color: #5c7a4a; background: #0f1a08;"
+            "border: 1px solid #2e4a0a; border-radius: 8px;"
             "padding: 10px;"
         )
         info.setWordWrap(True)
@@ -300,8 +300,8 @@ class BgRemoverTab(QWidget):
         self._status_lbl = QLabel("Open or drag an image to get started")
         self._status_lbl.setFixedHeight(30)
         self._status_lbl.setStyleSheet(
-            "font-size: 11px; color: #64748b; background: #f8fafc;"
-            "border-top: 1px solid #e2e8f0; padding: 0 16px;"
+            "font-size: 11px; color: #4a6a35; background: #080c14;"
+            "border-top: 1px solid #1a2535; padding: 0 16px;"
         )
         layout.addWidget(self._status_lbl)
         return container

@@ -40,7 +40,7 @@ class SplitView(QWidget):
         ox = (W - disp.width()) // 2
         oy = (H - disp.height()) // 2
 
-        p.fillRect(0, 0, W, H, QColor("#ffffff"))
+        p.fillRect(0, 0, W, H, QColor("#080c14"))
 
         # BEFORE — left half
         p.setClipRect(ox, oy, max(0, sx - ox), disp.height())
@@ -54,16 +54,16 @@ class SplitView(QWidget):
         p.setClipping(False)
 
         # divider line
-        p.setPen(QPen(QColor("#ffffff"), 2))
+        p.setPen(QPen(QColor("#b4ff2e"), 2))
         p.drawLine(sx, oy, sx, oy + disp.height())
 
         # handle
         cy, r = H // 2, 18
-        p.setBrush(QBrush(QColor("#16a34a")))
-        p.setPen(QPen(QColor("#ffffff"), 2))
+        p.setBrush(QBrush(QColor("#b4ff2e")))
+        p.setPen(QPen(QColor("#080c14"), 2))
         p.drawEllipse(QPoint(sx, cy), r, r)
         p.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
-        p.setPen(QColor("#ffffff"))
+        p.setPen(QColor("#080c14"))
         p.drawText(sx - r + 1, cy + 5, "‹")
         p.drawText(sx + r - 9, cy + 5, "›")
 
@@ -73,7 +73,7 @@ class SplitView(QWidget):
         if sx - ox > 70:
             self._shadow_text(p, ox + 12, label_y, "BEFORE", QColor("#ffffff"))
         if ox + disp.width() - sx > 70:
-            self._shadow_text(p, sx + 12, label_y, "AFTER", QColor("#22c55e"))
+            self._shadow_text(p, sx + 12, label_y, "AFTER", QColor("#b4ff2e"))
 
         p.end()
 
@@ -125,7 +125,7 @@ class PreviewDialog(QDialog):
         self.setWindowTitle("Preview — Before / After")
         self.setModal(True)
         self.resize(940, 640)
-        self.setStyleSheet("QDialog { background: #ffffff; color: #0f172a; }"
+        self.setStyleSheet("QDialog { background: #0a0f1a; color: #edffd0; }"
                            "QLabel  { background: transparent; }")
         self._build_ui(before_path, after_path, scale, method_label)
 
@@ -137,13 +137,13 @@ class PreviewDialog(QDialog):
         # header
         hdr = QWidget()
         hdr.setFixedHeight(52)
-        hdr.setStyleSheet("background:#f8fafc; border-bottom:1px solid #e2e8f0;")
+        hdr.setStyleSheet("background:#0c1020; border-bottom:1px solid #1a2535;")
         hl = QHBoxLayout(hdr)
         hl.setContentsMargins(20, 0, 20, 0)
         title = QLabel(f"Before / After  ·  {scale}×  ·  {method_label}")
-        title.setStyleSheet("font-size:13px; font-weight:600; color:#e2e8f0;")
+        title.setStyleSheet("font-size:13px; font-weight:600; color:#b4ff2e;")
         fname = QLabel(os.path.basename(before_path))
-        fname.setStyleSheet("font-size:11px; color:#475569;")
+        fname.setStyleSheet("font-size:11px; color:#5c7a4a;")
         hl.addWidget(title)
         hl.addStretch()
         hl.addWidget(fname)
@@ -156,7 +156,7 @@ class PreviewDialog(QDialog):
         # info / action bar
         bar = QWidget()
         bar.setFixedHeight(56)
-        bar.setStyleSheet("background:#f8fafc; border-top:1px solid #e2e8f0;")
+        bar.setStyleSheet("background:#0c1020; border-top:1px solid #1a2535;")
         bl = QHBoxLayout(bar)
         bl.setContentsMargins(20, 0, 20, 0)
         bl.setSpacing(16)
@@ -170,10 +170,10 @@ class PreviewDialog(QDialog):
         except Exception:
             lbl_b, lbl_a = QLabel("Original"), QLabel("Upscaled")
 
-        lbl_b.setStyleSheet("font-size:11px; color:#64748b;")
-        lbl_a.setStyleSheet("font-size:11px; color:#22c55e; font-weight:600;")
+        lbl_b.setStyleSheet("font-size:11px; color:#5c7a4a;")
+        lbl_a.setStyleSheet("font-size:11px; color:#b4ff2e; font-weight:600;")
         hint = QLabel("Drag divider to compare")
-        hint.setStyleSheet("font-size:10px; color:#334155;")
+        hint.setStyleSheet("font-size:10px; color:#4a6a35;")
 
         bl.addWidget(lbl_b)
         bl.addWidget(lbl_a)
@@ -214,18 +214,18 @@ class PreviewDialog(QDialog):
     def _btn_style(secondary: bool) -> str:
         if secondary:
             return """QPushButton {
-                background:#ffffff; color:#94a3b8;
-                border:1px solid #e2e8f0; border-radius:8px;
+                background:#0f1a0a; color:#5c7a4a;
+                border:1px solid #1e3010; border-radius:8px;
                 padding:8px 18px; font-size:12px; font-weight:600;
-            } QPushButton:hover { background:#f0fdf4; color:#f1f5f9; border-color:#16a34a; }"""
+            } QPushButton:hover { background:#162008; color:#b4ff2e; border-color:#b4ff2e; }"""
         return """QPushButton {
             background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
-                stop:0 #16a34a, stop:1 #15803d);
-            color:#fff; border:none; border-radius:8px;
+                stop:0 #80cc00, stop:1 #b4ff2e);
+            color:#080c14; border:none; border-radius:8px;
             padding:8px 22px; font-size:12px; font-weight:700;
         } QPushButton:hover {
             background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
-                stop:0 #6d28d9, stop:1 #2563eb);
+                stop:0 #b4ff2e, stop:1 #d4ff6e);
         }"""
 
     def _open_file(self):
