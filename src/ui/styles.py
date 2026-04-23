@@ -36,7 +36,8 @@ QFrame#card {
     border-radius: 14px;
 }
 QFrame#settingsPanel {
-    background-color: #f8fafb;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #ffffff, stop:1 #f0fdf4);
     border-right: 1px solid #ddeee2;
 }
 
@@ -60,7 +61,8 @@ QLabel#appSub {
 
 /* ── Scale Buttons ── */
 QPushButton#scaleBtn {
-    background-color: #ffffff;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #ffffff, stop:1 #f0f7f2);
     color: #6b8a72;
     border: 1px solid #ddeee2;
     border-radius: 8px;
@@ -69,12 +71,14 @@ QPushButton#scaleBtn {
     font-weight: 600;
 }
 QPushButton#scaleBtn:hover {
-    background-color: #f0fdf4;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #f0fdf4, stop:1 #dcf8e4);
     color: #1a2e1f;
     border-color: #93F1A5;
 }
 QPushButton#scaleBtn[active="true"] {
-    background-color: #93F1A5;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #c8f8d4, stop:0.4 #93F1A5, stop:1 #5ed47a);
     color: #0d1f10;
     border-color: #5ed47a;
 }
@@ -122,7 +126,8 @@ QLineEdit:hover { border-color: #b8dfc0; }
 
 /* ── Browse Button ── */
 QPushButton#browseBtn {
-    background-color: #ffffff;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #ffffff, stop:1 #f0f7f2);
     color: #6b8a72;
     border: 1px solid #ddeee2;
     border-radius: 8px;
@@ -130,17 +135,18 @@ QPushButton#browseBtn {
     font-size: 12px;
 }
 QPushButton#browseBtn:hover {
-    background-color: #f0fdf4;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #f0fdf4, stop:1 #dcf8e4);
     color: #1a2e1f;
     border-color: #93F1A5;
 }
 
 /* ── Primary Action Button ── */
 QPushButton#primaryBtn {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-        stop:0 #5ed47a, stop:1 #93F1A5);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #c8f8d4, stop:0.35 #93F1A5, stop:0.7 #5ed47a, stop:1 #3abf58);
     color: #0d1f10;
-    border: none;
+    border: 1px solid #5ed47a;
     border-radius: 10px;
     padding: 11px 28px;
     font-size: 14px;
@@ -148,21 +154,25 @@ QPushButton#primaryBtn {
     letter-spacing: 0.3px;
 }
 QPushButton#primaryBtn:hover {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-        stop:0 #93F1A5, stop:1 #b8f5c4);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #e0fde8, stop:0.35 #b8f5c4, stop:0.7 #7ae694, stop:1 #52cc6e);
+    border-color: #93F1A5;
 }
 QPushButton#primaryBtn:pressed {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-        stop:0 #3abf58, stop:1 #5ed47a);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #2faa4a, stop:0.4 #38b857, stop:1 #4acf60);
+    border-color: #2faa4a;
 }
 QPushButton#primaryBtn:disabled {
     background: #e8f0ea;
+    border-color: #d0ddd2;
     color: #a0b8a8;
 }
 
 /* ── Secondary Button ── */
 QPushButton#secondaryBtn {
-    background-color: transparent;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #ffffff, stop:1 #f5faf6);
     color: #6b8a72;
     border: 1px solid #ddeee2;
     border-radius: 10px;
@@ -171,7 +181,8 @@ QPushButton#secondaryBtn {
     font-weight: 600;
 }
 QPushButton#secondaryBtn:hover {
-    background-color: #f0fdf4;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #f0fdf4, stop:1 #dcf8e4);
     color: #1a2e1f;
     border-color: #93F1A5;
 }
@@ -203,13 +214,15 @@ QFrame#dropZone[drag="true"] {
 
 /* ── Image Card ── */
 QFrame#imageCard {
-    background-color: #ffffff;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #ffffff, stop:1 #f8fdf9);
     border: 1px solid #e2ebe4;
     border-radius: 10px;
 }
 QFrame#imageCard:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #f0fdf4, stop:1 #e4f8ea);
     border-color: #93F1A5;
-    background-color: #f0fdf4;
 }
 
 /* ── Remove Button ── */
