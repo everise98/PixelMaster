@@ -33,3 +33,8 @@ take_screenshots.py
 make_comparison.py
 convert_models.py
 demo_comparison.png
+
+# Large demo media / test data
+*.mp4
+demo/set5/
+test_results/
